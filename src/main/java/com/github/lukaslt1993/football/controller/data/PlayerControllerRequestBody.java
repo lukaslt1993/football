@@ -1,7 +1,5 @@
 package com.github.lukaslt1993.football.controller.data;
 
-import com.github.lukaslt1993.football.entity.Team;
-
 public class PlayerControllerRequestBody {
 
     private String name;

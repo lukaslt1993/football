@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Service
 public class PlayerTransferService {
 
@@ -29,29 +32,35 @@ public class PlayerTransferService {
 
     public void transfer(Player player, Team team) {
         Team currTeam = player.getTeam();
-        int transferFee = player.getExperienceMonths() * MULTIPLIER / player.getAge();
-        double contractFee = transferFee + (currTeam.getCommissionPercent() / 100 * transferFee);
-        double priceInOtherTeamCurrency = convert(currTeam.getCurrency(), contractFee, team.getCurrency());
-        double moneyRemains = team.getMoney() - priceInOtherTeamCurrency;
+        BigDecimal transferFee =
+                new BigDecimal(player.getExperienceMonths() * MULTIPLIER)
+                        .divide(new BigDecimal(player.getAge()), RoundingMode.HALF_UP);
+        BigDecimal contractFee =
+                transferFee.add(new BigDecimal(currTeam.getCommissionPercent()).
+                        divide(new BigDecimal(100)).multiply(transferFee));
+        BigDecimal priceInOtherTeamCurrency =
+                convert(currTeam.getCurrency(), contractFee.toPlainString(), team.getCurrency());
+        BigDecimal moneyRemains = team.getMoney().subtract(priceInOtherTeamCurrency);
 
-        if (moneyRemains < 0) {
+        if (moneyRemains.intValue() < 0) {
             throw new RuntimeException("Team hasn't got enough of money for the transfer");
         }
 
         team.setMoney(moneyRemains);
-        currTeam.setMoney(currTeam.getMoney() + contractFee);
+        currTeam.setMoney(currTeam.getMoney().add(contractFee));
         currTeam.removePlayer(player);
         player.setTeam(team);
         teamRepo.save(team);
         playerRepo.save(player);
     }
 
-    private double convert(String fromCurrency, Double amount, String toCurrency) {
+    private BigDecimal convert (String fromCurrency, String amount, String toCurrency) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(CONVERTER_ADDRESS);
         builder.queryParam("fromCurrency", fromCurrency);
         builder.queryParam("amount", amount);
         builder.queryParam("toCurrency", toCurrency);
-        return client.getForObject(builder.build().toUri(), Double.class);
+        String response = client.getForObject(builder.build().toUri(), String.class);
+        return new BigDecimal(response);
     }
 
 }

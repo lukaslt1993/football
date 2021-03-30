@@ -51,7 +51,7 @@ class PlayerTransferServiceTest {
         // Entity ids are generated sequentially, starting from 1
         transferService.transfer(1, 3);
         assertEquals(3, service.getPlayer(1L).getTeam().getId());
-        assertEquals(100000000 - 55000, teams.getTeam(3L).getMoney());
+        assertEquals(100000000 - 55000, teams.getTeam(3L).getMoney().intValue());
     }
 
     @Test
@@ -78,7 +78,7 @@ class PlayerTransferServiceTest {
         // Entity ids are generated sequentially, starting from 1
         transferService.transfer(1, 3);
         assertEquals(3, service.getPlayer(1L).getTeam().getId());
-        assertTrue(100000000 - 55000 > teams.getTeam(3L).getMoney());
+        assertTrue(100000000 - 55000 > teams.getTeam(3L).getMoney().intValue());
     }
 
 }

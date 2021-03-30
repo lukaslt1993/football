@@ -7,20 +7,21 @@ import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
+import java.math.BigDecimal;
 
 @RestController
 public class ConverterController {
 
     @GetMapping
-    public Double get(String fromCurrency, Double amount, String toCurrency) {
+    public String get(String fromCurrency, String amount, String toCurrency) {
         MonetaryAmount amnt = Monetary.getDefaultAmountFactory().setCurrency(fromCurrency)
-                .setNumber(amount).create();
+                .setNumber(new BigDecimal(amount)).create();
 
         CurrencyConversion conversion = MonetaryConversions.getConversion(toCurrency);
 
         MonetaryAmount convertedAmount = amnt.with(conversion);
 
-        return convertedAmount.getNumber().doubleValueExact();
+        return convertedAmount.getNumber().toString();
     }
 
 }

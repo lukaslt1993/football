@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Team {
     @NotBlank(message = "Team currency must be set")
     private String currency;
 
-    private double money;
+    private BigDecimal money;
 
     @Max(value = 10, message = "Team commission percent can be maximally 10")
     private double commissionPercent;
@@ -58,11 +59,11 @@ public class Team {
         this.currency = currency;
     }
 
-    public double getMoney() {
+    public BigDecimal getMoney() {
         return money;
     }
 
-    public void setMoney(double money) {
+    public void setMoney(BigDecimal money) {
         this.money = money;
     }
 

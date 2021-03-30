@@ -7,6 +7,7 @@ import com.github.lukaslt1993.football.repository.PlayerRepository;
 import com.github.lukaslt1993.football.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class TeamService {
     private Team copy(TeamControllerRequestBody from, Team to) {
         to.setCommissionPercent(from.getCommissionPercent());
         to.setCurrency(from.getCurrency());
-        to.setMoney(from.getMoney());
+        to.setMoney(new BigDecimal(from.getMoney()));
         to.setName(from.getName());
 
         if (from.getPlayerIds() != null && !from.getPlayerIds().isEmpty()) {
